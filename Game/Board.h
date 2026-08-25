@@ -37,9 +37,11 @@ private:
 	/** 石が置ける範囲*/
 	Stone m_board[SIZE][SIZE];
 	/** 最初は黒の番からスタートする*/
-	Stone m_turn = BLACK;
+	Stone m_turn;
 
 	bool m_leftButtonWasPressed = false;
+	/** ターンのスライドアニメ―ション中かどうか*/
+	bool m_isPlayTurnAnimation = false;
 
 	bool WorldPosToBoardIndex(float worldX, float worldY, int& outX, int& outY) const;
 
@@ -49,6 +51,29 @@ private:
 
 	/** 駒を置ける場所を示すヒント用スプライト*/
 	SpriteRender m_hintSprite[SIZE][SIZE];
+
+	/** 手番を表示するためのUI*/
+	/** 黒*/
+	SpriteRender m_blackTurnSprite;
+	/** 白*/
+	SpriteRender m_WhiteTurnSprite;
+
+	/** 手番アニメーション用enum*/
+	enum class TurnUIState
+	{
+		SlideIn,/** 右から中央へ移動中*/
+		Hold,/** 中央で停止中*/
+		SlideOut,/** 中央から画面外へ移動中*/
+		Idle/** 画面外で待機中*/
+	};
+
+	TurnUIState m_turnUIState = TurnUIState::SlideIn;
+	/** 経過時間*/
+	float m_turnUITimer = 0.0f;
+	/** 手番UIの現在のX座標*/
+	float m_turnUIPosX = 0.0f;
+	/** 前フレームの手番*/
+	Stone m_lastTurn = EMPTY;
 private:
 	//挟んだ駒をひっくり返す
 	void Reverse(int x, int y, Stone turn);
@@ -57,6 +82,9 @@ private:
 
 	/**マウス入力を見て、クリックされていたら石を置く処理*/
 	void HandleMouseInput();
+
+	/** 手番アニメーション更新処理*/
+	void UpdateTurnUI();
 };
 
 

@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Board.h"
-
+#include<random>
 
 namespace
 {
@@ -11,6 +11,32 @@ namespace
 
 	/** 置ける場所ヒント画像のファイルパス*/
 	const char* FILEPATH = "Assets/Osero/OseroCanPut.dds";
+
+	/** 手番を表示するUIファイルパス*/
+	const char* FILEPATH_BLACKTURN = "Assets/OseroTurn/Black_Turn.dds";
+	const char* FILEPATH_WHITETURN = "Assets/OseroTurn/White_Turn.dds";
+
+	/** 手番表示UIの幅と高さ*/
+	const float TURNUI_WIDTH = 800.0f;
+	const float TURNUI_HEIGHT = 200.0f;
+
+	/** 手番UIアニメーション用の座標 ・時間定数*/
+	/** 画面右外側の開始位置*/
+	const float TURNUI_START_X = 1000.0f;
+	/** 中央で一旦停止する位置*/
+	const float TURNUI_CENTER_X = 0.0f;
+	/**画面左外側の消える位置 */
+	const float TURNUI_END_X= -1300.0f;
+	/** Y座標は固定*/
+	float TURNUI_POS_Y = 0.0f;
+
+	/** 右→中央にかかる時間*/
+	const float TURNUI_SLIDEIN_TIME = 0.30f;
+	/** 中央で止まっている秒数*/
+	const float TURNUI_HOLD_TIME = 2.0f;
+	/** 中央→画面外にかかる秒数*/
+	const float TURNUI_SLIDEOUT_TIME = 0.30f;
+
 
 	/** 8方向(左上から時計回り)*/
 	const int DX[8] = { -1,0,1,-1,1,-1,0,1 };
@@ -192,6 +218,24 @@ bool Board::Start()
 	}
 
 	First();
+
+	/** 先手をランダムで決める*/
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<int> dist(0, 1);
+	m_turn = (dist(gen) == 0) ? BLACK : WHITE;
+
+	/** 手番表示UIの初期化*/
+	m_blackTurnSprite.Init(FILEPATH_BLACKTURN, TURNUI_WIDTH, TURNUI_HEIGHT);
+	m_WhiteTurnSprite.Init(FILEPATH_WHITETURN, TURNUI_WIDTH, TURNUI_HEIGHT);
+	
+	/** アニメーションを開始させる*/
+	m_lastTurn = m_turn;
+	m_turnUIState = TurnUIState::SlideIn;
+	m_turnUITimer = 0.0f;
+	m_turnUIPosX = TURNUI_START_X;
+	m_isPlayTurnAnimation = true;
+
 	/** 全マス分のインスタンスを初期化*/
 	for (int y = 0; y < SIZE; y++)
 	{
@@ -206,12 +250,22 @@ bool Board::Start()
 
 void Board::Update()
 {
+	/** 手番表示用アニメーションを更新*/
+	UpdateTurnUI();
+	
 	/** マウス操作をできるようにする*/
 	HandleMouseInput();
+	
+	
 }
 
 void Board::HandleMouseInput()
 {
+	/** ターン交代のスライドアニメ―ション中は操作できない*/
+	if (m_isPlayTurnAnimation)
+	{
+		return;
+	}
 	/** どのウィンドウを基準にするかを知るためにhwndの識別番号を取得する*/
 	/** アクティブウィンドウのハンドルを取得*/
 	/** GetActiveは「現在、キーボードフォーカスが当たっている(操作対象になっている)ウィンドウ*/
@@ -278,6 +332,84 @@ void Board::HandleMouseInput()
 }
 
 
+void Board::UpdateTurnUI()
+{
+	/** 手番が切り替わったらアニメーションを最初からやり直す*/
+	if (m_turn != m_lastTurn)
+	{
+		m_lastTurn = m_turn;
+		m_turnUIState = TurnUIState::SlideIn;
+		m_turnUITimer = 0.0f;
+		m_turnUIPosX = TURNUI_START_X;
+		m_isPlayTurnAnimation = true;
+		
+	}
+
+	float deltaTime = g_gameTime->GetFrameDeltaTime();
+
+	switch (m_turnUIState)
+	{
+	/** 画面外から中央へ、時間経過(t)に応じて線形補完しながら移動*/
+	case TurnUIState::SlideIn:
+		{
+			m_turnUITimer += deltaTime;
+		float t = m_turnUITimer / TURNUI_SLIDEIN_TIME;
+		/** ここで次のHold状態に遷移*/
+		if (t >= 1.0f)
+		{
+			m_turnUIPosX = TURNUI_CENTER_X;
+			m_turnUIState = TurnUIState::Hold;
+			m_turnUITimer = 0.0f;
+		}
+		else
+		{
+			/** 右から中央へ線形補完*/
+			m_turnUIPosX = TURNUI_START_X + (TURNUI_CENTER_X - TURNUI_START_X) * t;
+		}
+		break;
+		}
+		/**中央位置で静止したまま、TURNUI_HOLD_TIMEだけ待機。時間が経過したらSlideOutへ遷移*/
+		case TurnUIState::Hold:
+		{
+			m_turnUITimer += deltaTime;
+			m_turnUIPosX = TURNUI_CENTER_X;
+			if (m_turnUITimer >= TURNUI_HOLD_TIME)
+			{
+				m_turnUIState = TurnUIState::SlideOut;
+				m_turnUITimer = 0.0f;
+			}
+			break;
+		}
+		case TurnUIState::SlideOut:
+		{
+			/** 中央から画面外へ*/
+			m_turnUITimer += deltaTime;
+			float t = m_turnUITimer / TURNUI_SLIDEOUT_TIME;
+			if (t >= 1.0f)
+			{
+				m_turnUIPosX = TURNUI_END_X;
+				m_turnUIState = TurnUIState::Idle;
+				m_turnUITimer = 0.0f;
+				m_isPlayTurnAnimation = false;
+			}
+			else
+			{
+				/** 中央から画面外へ線形補完*/
+				m_turnUIPosX = TURNUI_CENTER_X + (TURNUI_END_X - TURNUI_CENTER_X) * t;
+			}
+			break;
+		}
+
+		case TurnUIState::Idle:
+		default:
+			/** 画面外で待機*/
+			m_turnUIPosX = TURNUI_END_X;
+			
+			break;
+	}
+}
+
+
 //初期化
 void Board::First()
 {
@@ -308,8 +440,6 @@ void Board::Render(RenderContext& rc)
 	//盤面の表示
 	m_spriteRender.Update();
 	m_spriteRender.Draw(rc);
-
-
 
 	/** 盤面の中心が(0,0)なので
 	石の盤面を左上端(WIDTHBORAD/2,-HIGHTBOARD/2)を基準にする*/
@@ -358,4 +488,20 @@ void Board::Render(RenderContext& rc)
 			}
 		}
 	}
+
+	/** 現在の手番に応じて手番表示UIを切り替えて描画させる*/
+	if (m_turn == BLACK)
+	{
+		m_blackTurnSprite.SetPosition({ m_turnUIPosX,TURNUI_POS_Y,0.0f });
+		m_blackTurnSprite.Update();
+		m_blackTurnSprite.Draw(rc);
+	}
+
+	else if (m_turn == WHITE)
+	{
+		m_WhiteTurnSprite.SetPosition({ m_turnUIPosX, TURNUI_POS_Y, 0.0f });
+		m_WhiteTurnSprite.Update();
+		m_WhiteTurnSprite.Draw(rc);
+	}
+
 }
