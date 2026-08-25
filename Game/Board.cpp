@@ -64,13 +64,118 @@ bool Board::CanPut(int x, int y, Stone turn)const
 	return false;
 }
 
+void Board::Reverse(int x, int y, Stone turn)
+{
+	Stone opponent = (turn == BLACK) ? WHITE : BLACK;
+
+	for (int dir = 0; dir < 8; dir++)
+	{
+		int nx = x + DX[dir];
+		int ny = y + DY[dir];
+		/**相手の石が一個以上あるかどうか */
+		bool hasOpponentBetween = false;
+
+		/** 指定した方向に「挟めるかどうか」をもう一度確認*/
+
+		/** cx,cyの値はどんどん動かして使うので
+		「ひっくり返す開始位置」として記録しておきたいので保存しておく。*/
+
+		/**例えるなら、nx, ny は「スタート地点のメモ」、
+		cx, cy は「今どこまで調べたかを進めていく作業用の変数」*/
+		int cx = nx, cy = ny;
+		/** 相手の石がどこまで連続しているか*/
+		while (IsInside(cx, cy) && m_board[cy][cx] == opponent)
+		{
+			cx += DX[dir];
+			cy += DY[dir];
+			hasOpponentBetween = true;
+		}
+
+		/** 挟めるなら挟んだ石を全てひっくり返してTurn色にする*/
+		if (hasOpponentBetween &&
+			IsInside(cx, cy) &&
+			m_board[cy][cx] == turn)
+		{
+			/** 保存しておいた変数を呼び出す*/
+			int fx = nx, fy = ny;
+			/**fx,fyを自分の石があったcx,cyに到達するまで繰り返す */
+			while (fx != cx || fy != cy)
+			{
+				m_board[fy][fx] = turn;
+				fx += DX[dir];
+				fy += DY[dir];
+			}
+		}
+	}
+}
+
+void Board::PutStone(int x, int y, Stone turn)
+{
+	/** 置けない場所なら何もしない(念のための安全策)*/
+	if (!CanPut(x, y, turn))
+	{
+		return;
+	}
+
+	/** まず石を置く*/
+	m_board[y][x] = turn;
+
+	/** 挟んだ石をひっくり返す*/
+	Reverse(x, y, turn);
+}
+
+
+bool Board::HasValidMove(Stone turn)const
+{
+	/** 盤面全マスをチェックして、1つでも置ける場所があればtrue*/
+	for (int y = 0; y < SIZE; y++)
+	{
+		for (int x = 0; x < SIZE; x++)
+		{
+			if (CanPut(x, y, turn))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Board::WorldPosToBoardIndex(float worldX, float worldY, int& outX, int& outY)const
+{
+	/** 盤面の左端、下端の座標を計算*/
+	const float startX = -WIDTHBOARD * 0.5f;
+	const float startY = -HIGHTBOARD * 0.5f;
+	/** 1マスのサイズを計算*/
+	/** 盤面の全体をSIZE(6)で割って求めている*/
+	const float cellSize = WIDTHBOARD / (float)SIZE;
+
+	/** 盤面の範囲外なら無効*/
+	if (worldX <startX || worldX > startX + WIDTHBOARD)return false;
+	if (worldY < startY || worldY > startY + HIGHTBOARD)return false;
+	/** WorldX - startX = 盤面の左端からの距離*/
+	int col = (int)((worldX - startX) / cellSize);
+	/** WorldY - startY = 盤面の下端からの距離*/
+	int rowFromBottom = (int)((worldY - startY) / cellSize);
+
+	/** RenderでY方向を反転させているのでこちらも同様に反転させる*/
+	int row = (SIZE - 1) - rowFromBottom;
+
+	if (!IsInside(col, row))return false;
+
+	outX = col;
+	outY = row;
+	return true;
+}
+
+
+
 
 bool Board::Start()
 {
 	m_spriteRender.Init(FILEPATHBOARD, WIDTHBOARD, HIGHTBOARD);
 	m_spriteRender.SetPosition({ 0.0f,0.0f,0.0f });
 	First();
-
 	/** 全マス分のインスタンスを初期化*/
 	for (int y = 0; y < SIZE; y++)
 	{
@@ -85,8 +190,78 @@ bool Board::Start()
 
 void Board::Update()
 {
-
+	/** マウス操作をできるようにする*/
+	HandleMouseInput();
 }
+
+void Board::HandleMouseInput()
+{
+	/** どのウィンドウを基準にするかを知るためにhwndの識別番号を取得する*/
+	/** アクティブウィンドウのハンドルを取得*/
+	/** GetActiveは「現在、キーボードフォーカスが当たっている(操作対象になっている)ウィンドウ*/
+	HWND hwnd = GetActiveWindow();
+	if (hwnd == nullptr)
+	{
+		return; // ウィンドウが取得できなければ何もしない
+	}
+
+	/** 左クリックのエッジ検知*/
+    /**VK_LBUTTONは「マウスの左ボタン」を表す定数*/
+	bool leftButtonIsPressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+	/** クリックした瞬間を検知する*/
+	bool leftButtonTriggerd = leftButtonIsPressed && !m_leftButtonWasPressed;
+	/** 次のフレームのために、今の状態を保存しておく*/
+	m_leftButtonWasPressed = leftButtonIsPressed;
+
+	/** クリックされた瞬間は何もしない*/
+	if (!leftButtonTriggerd)
+	{
+		return;
+	}
+
+
+	/** マウス座標の取得*/
+	POINT pt;
+	/** 現在のマウスカーソル位置を取得*/
+	GetCursorPos(&pt);
+	/** 取得したスクリーン座標をクライアント座標に変換*/
+	ScreenToClient(hwnd, &pt);
+
+	/** クライアントサイズの取得*/
+	RECT rect;
+	/** クライアント領域の短径情報を取得*/
+	GetClientRect(hwnd, &rect);
+	/** right - leftで幅、bottom - topで高さを計算してfloat型に変換*/
+	float clientWidth = static_cast<float>(rect.right - rect.left);
+	float clientHeight = static_cast<float>(rect.bottom - rect.top);
+
+	/** クライアント座標　→　ワールド座標に取得*/
+	float worldX = static_cast<float>(pt.x) - clientWidth * 0.5f;
+	/** Y軸はスクリーン座標系とワールド座標系でY軸の向きが逆なので
+	     「-」をつける*/
+	float worldY = -(static_cast<float>(pt.y) - clientHeight * 0.5f);
+
+	/** ワールド座標→盤面のマス目に変換*/
+	int bx, by;
+	if (!WorldPosToBoardIndex(worldX, worldY, bx, by))
+	{
+		return;
+	}
+
+	/** 石を置く*/
+	if (CanPut(bx, by, m_turn))
+	{
+		PutStone(bx, by, m_turn);
+		/** 駒を置いたらターンを交代する*/
+		Stone next = (m_turn == BLACK) ? WHITE : BLACK;
+		if (HasValidMove(next))
+		{
+			m_turn = next;
+		}
+	}
+}
+
+
 //初期化
 void Board::First()
 {
@@ -115,8 +290,8 @@ Board::Stone Board::GetStone(int x, int y)const
 void Board::Render(RenderContext& rc)
 {
 	//盤面の表示
-	m_spriteRender.Draw(rc);
 	m_spriteRender.Update();
+	m_spriteRender.Draw(rc);
 	/** 盤面の中心が(0,0)なので
 	石の盤面を左上端(WIDTHBORAD/2,-HIGHTBOARD/2)を基準にする*/
 	const float startX = -WIDTHBOARD * 0.5f;

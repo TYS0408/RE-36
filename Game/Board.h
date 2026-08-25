@@ -16,12 +16,14 @@ public:
 		WHITE
 	};
 	bool Start();
-	void Update();
+	void Update()override;
 	void Render(RenderContext& rc)override;
 public:
 	void First();
 	//このマスに駒を置けるか
 	bool CanPut(int x, int y, Stone turn)const;
+
+	//bool WorldPosToBoardIndex(float worldx, float worldy, int& outX, int& outY)const;
 	//盤面に駒を置く
 	//これは状態を変更する関数だからconstはなし
 	void PutStone(int x, int y, Stone turn);
@@ -32,7 +34,15 @@ public:
 	Stone GetStone(int x, int y)const;
 
 private:
+	/** 石が置ける範囲*/
 	Stone m_board[SIZE][SIZE];
+	/** 最初は黒の番からスタートする*/
+	Stone m_turn = BLACK;
+
+	bool m_leftButtonWasPressed = false;
+
+	bool WorldPosToBoardIndex(float worldX, float worldY, int& outX, int& outY) const;
+
 	Piece_White m_piece_White[SIZE][SIZE];
 	Piece_Black m_piece_Black[SIZE][SIZE];
 	SpriteRender m_spriteRender;
@@ -41,5 +51,8 @@ private:
 	void Reverse(int x, int y, Stone turn);
 	/** 置ける場所が盤面の範囲内に収まっているか*/
 	bool IsInside(int x, int y)const;
+
+	/**マウス入力を見て、クリックされていたら石を置く処理*/
+	void HandleMouseInput();
 };
 
