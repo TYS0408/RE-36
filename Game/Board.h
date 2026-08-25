@@ -46,6 +46,9 @@ private:
 	Piece_White m_piece_White[SIZE][SIZE];
 	Piece_Black m_piece_Black[SIZE][SIZE];
 	SpriteRender m_spriteRender;
+
+	/** 駒を置ける場所を示すヒント用スプライト*/
+	SpriteRender m_hintSprite[SIZE][SIZE];
 private:
 	//挟んだ駒をひっくり返す
 	void Reverse(int x, int y, Stone turn);
@@ -55,4 +58,5 @@ private:
 	/**マウス入力を見て、クリックされていたら石を置く処理*/
 	void HandleMouseInput();
 };
+
 

@@ -9,6 +9,9 @@ namespace
 	const int WIDTHBOARD = 1000.0f;
 	const int HIGHTBOARD = 1000.0f;
 
+	/** 置ける場所ヒント画像のファイルパス*/
+	const char* FILEPATH = "Assets/Osero/OseroCanPut.dds";
+
 	/** 8方向(左上から時計回り)*/
 	const int DX[8] = { -1,0,1,-1,1,-1,0,1 };
 	const int DY[8] = { -1,-1,-1,0,0,1,1,1 };
@@ -25,8 +28,8 @@ Board::~Board()
 
 bool Board::IsInside(int x, int y)const
 {
-	
-	return x >= 0 && x < SIZE && y >= 0 &&y <  SIZE;
+
+	return x >= 0 && x < SIZE && y >= 0 && y < SIZE;
 }
 
 bool Board::CanPut(int x, int y, Stone turn)const
@@ -48,7 +51,7 @@ bool Board::CanPut(int x, int y, Stone turn)const
 		bool hasOpponentBetween = false;
 
 		/** 相手の石が連続している間、進み続ける*/
-		while (IsInside(nx,ny) &&m_board[ny][nx] ==opponent)
+		while (IsInside(nx, ny) && m_board[ny][nx] == opponent)
 		{
 			nx += DX[dir];
 			ny += DY[dir];
@@ -175,6 +178,19 @@ bool Board::Start()
 {
 	m_spriteRender.Init(FILEPATHBOARD, WIDTHBOARD, HIGHTBOARD);
 	m_spriteRender.SetPosition({ 0.0f,0.0f,0.0f });
+
+	/** ヒント画像の初期化*/
+	const float cellSize = WIDTHBOARD / (float)SIZE;
+	const float hintSize = cellSize * 0.6f;
+
+	for (int y = 0; y < SIZE; y++)
+	{
+		for (int x = 0; x < SIZE; x++)
+		{
+			m_hintSprite[y][x].Init(FILEPATH, hintSize, hintSize);
+		}
+	}
+
 	First();
 	/** 全マス分のインスタンスを初期化*/
 	for (int y = 0; y < SIZE; y++)
@@ -206,7 +222,7 @@ void Board::HandleMouseInput()
 	}
 
 	/** 左クリックのエッジ検知*/
-    /**VK_LBUTTONは「マウスの左ボタン」を表す定数*/
+	/**VK_LBUTTONは「マウスの左ボタン」を表す定数*/
 	bool leftButtonIsPressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
 	/** クリックした瞬間を検知する*/
 	bool leftButtonTriggerd = leftButtonIsPressed && !m_leftButtonWasPressed;
@@ -238,7 +254,7 @@ void Board::HandleMouseInput()
 	/** クライアント座標　→　ワールド座標に取得*/
 	float worldX = static_cast<float>(pt.x) - clientWidth * 0.5f;
 	/** Y軸はスクリーン座標系とワールド座標系でY軸の向きが逆なので
-	     「-」をつける*/
+		 「-」をつける*/
 	float worldY = -(static_cast<float>(pt.y) - clientHeight * 0.5f);
 
 	/** ワールド座標→盤面のマス目に変換*/
@@ -273,7 +289,7 @@ void Board::First()
 
 	//6×6の盤面の中央は(2,2)(3,3)だから
 	// 盤面から0,1,2,……と数える
-	      //行//列
+		  //行//列
 	m_board[2][2] = WHITE;
 	m_board[3][3] = WHITE;
 	m_board[2][3] = BLACK;
@@ -292,12 +308,33 @@ void Board::Render(RenderContext& rc)
 	//盤面の表示
 	m_spriteRender.Update();
 	m_spriteRender.Draw(rc);
+
+
+
 	/** 盤面の中心が(0,0)なので
 	石の盤面を左上端(WIDTHBORAD/2,-HIGHTBOARD/2)を基準にする*/
 	const float startX = -WIDTHBOARD * 0.5f;
 	const float startY = -HIGHTBOARD * 0.5f;
 	const float cellSize = WIDTHBOARD / (float)SIZE;
-	
+
+	/** 盤面に駒を置ける場所にヒントを描画*/
+	for (int y = 0; y < SIZE; y++)
+	{
+		for (int x = 0; x < SIZE; x++)
+		{
+			if (CanPut(x, y, m_turn))
+			{
+				float drawX = startX + x * cellSize + cellSize * 0.5f;
+				float drawY = startY + (SIZE - 1 - y) * cellSize + cellSize * 0.5f;
+
+				m_hintSprite[y][x].SetPosition({ drawX,drawY,0.0f });
+				m_hintSprite[y][x].Update();
+				m_hintSprite[y][x].Draw(rc);
+			}
+		}
+	}
+
+
 
 	//ここで盤面のデータをみて初期位置の石を配置
 	for (int y = 0; y < SIZE; y++)
