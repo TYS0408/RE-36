@@ -1,20 +1,21 @@
 ﻿#include "stdafx.h"
 #include "Board.h"
-#include<random>
-
+#include"GameScene/GameClear.h"
+#include"GameScene/GameOver.h"
+#include"OseroAI/OseroAI.h"
 namespace
 {
 	//オセロの盤面
-	const char* FILEPATHBOARD = "Assets/Osero/Board.dds";
+	const char* FILEPATHBOARD = "Assets/Sprite/Osero/Board.dds";
 	const int WIDTHBOARD = 1000.0f;
 	const int HIGHTBOARD = 1000.0f;
 
 	/** 置ける場所ヒント画像のファイルパス*/
-	const char* FILEPATH = "Assets/Osero/OseroCanPut.dds";
+	const char* FILEPATH = "Assets/Sprite/Osero/OseroCanPut.dds";
 
 	/** 手番を表示するUIファイルパス*/
-	const char* FILEPATH_BLACKTURN = "Assets/OseroTurn/Black_Turn.dds";
-	const char* FILEPATH_WHITETURN = "Assets/OseroTurn/White_Turn.dds";
+	const char* FILEPATH_BLACKTURN = "Assets/Sprite/OseroTurn/Black_Turn.dds";
+	const char* FILEPATH_WHITETURN = "Assets/Sprite/OseroTurn/White_Turn.dds";
 
 	/** 手番表示UIの幅と高さ*/
 	const float TURNUI_WIDTH = 800.0f;
@@ -44,13 +45,14 @@ namespace
 }
 Board::Board()
 {
-
+	m_ai = new OseroAI(); // ★コンストラクタで生成
 }
 
 Board::~Board()
 {
-
+	delete m_ai;
 }
+
 
 bool Board::IsInside(int x, int y)const
 {
@@ -138,6 +140,33 @@ void Board::Reverse(int x, int y, Stone turn)
 	}
 }
 
+
+
+void Board::UpdateAI()
+{
+	/** ターン交代のスライドアニメ―ション中は操作できない*/
+	if (m_isPlayTurnAnimation)
+	{
+		return;
+	}
+	if (m_gameState != GameState::Playing) return;
+	if (m_isPlayTurnAnimation) return;
+	if (m_turn != WHITE) return;
+
+	int x, y;
+	if (!m_ai->DecideMove(*this, WHITE, x, y)) return;
+
+	PutStone(x, y, WHITE);
+
+	Stone next = BLACK;
+	if (HasValidMove(next))
+	{
+		m_turn = next;
+		StartTurnAnimation();
+	}
+	
+	else if (!HasValidMove(m_turn)) CheckGameEnd();
+}
 void Board::PutStone(int x, int y, Stone turn)
 {
 	/** 置けない場所なら何もしない(念のための安全策)*/
@@ -219,11 +248,12 @@ bool Board::Start()
 
 	First();
 
-	/** 先手をランダムで決める*/
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> dist(0, 1);
-	m_turn = (dist(gen) == 0) ? BLACK : WHITE;
+	m_turn = BLACK;
+	///** 先手をランダムで決める*/
+	//std::random_device rd;
+	//std::mt19937 gen(rd());
+	//std::uniform_int_distribution<int> dist(0, 1);
+	//m_turn = (dist(gen) == 0) ? BLACK : WHITE;
 
 	/** 手番表示UIの初期化*/
 	m_blackTurnSprite.Init(FILEPATH_BLACKTURN, TURNUI_WIDTH, TURNUI_HEIGHT);
@@ -255,12 +285,19 @@ void Board::Update()
 	
 	/** マウス操作をできるようにする*/
 	HandleMouseInput();
-	
+	/** 白の番になったらAIに考えて置いてもらう*/
+	UpdateAI();
 	
 }
 
 void Board::HandleMouseInput()
 {
+
+	/** ゲームが終了していたら操作できない*/
+	if (m_gameState != GameState::Playing)
+	{
+		return;
+	}
 	/** ターン交代のスライドアニメ―ション中は操作できない*/
 	if (m_isPlayTurnAnimation)
 	{
@@ -326,24 +363,28 @@ void Board::HandleMouseInput()
 		Stone next = (m_turn == BLACK) ? WHITE : BLACK;
 		if (HasValidMove(next))
 		{
+			StartTurnAnimation();
 			m_turn = next;
+		}
+		/** 次の手番が置けない場合、現在の手番も置けなければ終了*/
+		else if (!HasValidMove(m_turn))
+		{
+			CheckGameEnd();
 		}
 	}
 }
-
+void Board::StartTurnAnimation()
+{
+	m_lastTurn = m_turn;
+	m_turnUIState = TurnUIState::SlideIn;
+	m_turnUITimer = 0.0f;
+	m_turnUIPosX = TURNUI_START_X;
+	m_isPlayTurnAnimation = true;
+}
 
 void Board::UpdateTurnUI()
 {
-	/** 手番が切り替わったらアニメーションを最初からやり直す*/
-	if (m_turn != m_lastTurn)
-	{
-		m_lastTurn = m_turn;
-		m_turnUIState = TurnUIState::SlideIn;
-		m_turnUITimer = 0.0f;
-		m_turnUIPosX = TURNUI_START_X;
-		m_isPlayTurnAnimation = true;
-		
-	}
+
 
 	float deltaTime = g_gameTime->GetFrameDeltaTime();
 
@@ -434,6 +475,61 @@ Board::Stone Board::GetStone(int x, int y)const
 	return m_board[y][x];
 }
 
+void Board::CountStone(int& black, int& white)const
+{
+	/** 初期化しておく*/
+	black = 0;
+	white = 0;
+	/** 盤面を全て見て黒と白の駒を数える*/
+	for (int y = 0; y < SIZE; y++)
+	{
+		for (int x = 0; x < SIZE; x++)
+		{
+			if (m_board[y][x] == BLACK)
+			{
+				black++;
+			}
+			else if(m_board[y][x] ==WHITE)
+			{
+				white++;
+			}
+		}
+	}
+
+
+}
+
+
+void Board::CheckGameEnd()
+{
+	if (!HasValidMove(BLACK) && !HasValidMove(WHITE))
+	{
+		int blackCount = 0;
+		int whiteCount = 0;
+		CountStone(blackCount, whiteCount);
+
+		/** 黒が白より多い場合はクリアにする*/
+		if (blackCount > whiteCount)
+		{
+			/** すでに生成していたら生成しない*/
+			if (m_GameClear == nullptr)
+			{
+				m_GameClear  = NewGO<GameClear>(0, "gameclear");
+			}
+			m_gameState = GameState::GameClear;
+		}
+		else
+		{
+			if (m_GameOver == nullptr)
+			{
+				m_GameOver = NewGO<GameOver>(0, "gameover");
+			}
+			m_gameState = GameState::GameOver;
+		}
+	}
+}
+
+
 
 void Board::Render(RenderContext& rc)
 {
@@ -479,12 +575,12 @@ void Board::Render(RenderContext& rc)
 			if (m_board[y][x] == BLACK)
 			{
 				m_piece_Black[y][x].SetPosition(drawX, drawY);
-				m_piece_Black[y][x].Render(rc);
+				m_piece_Black[y][x].Render(rc,m_turn ==BLACK);
 			}
 			else if (m_board[y][x] == WHITE)
 			{
 				m_piece_White[y][x].SetPosition(drawX, drawY);
-				m_piece_White[y][x].Render(rc);
+				m_piece_White[y][x].Render(rc,m_turn ==WHITE);
 			}
 		}
 	}

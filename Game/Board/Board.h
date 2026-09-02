@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include"Picec/Piece_White.h"
+#include"Piece/Piece_White.h"
 #include"Piece/Piece_Black.h"
 class GameOver;
 class GameClear;

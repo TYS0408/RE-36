@@ -4,6 +4,18 @@
     <Filter Include="system">
       <UniqueIdentifier>{22dd8095-74f9-46df-81a1-36675a040b1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameScene">
+      <UniqueIdentifier>{057152cc-52c1-4bcc-be6b-d1a4710192f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Board">
+      <UniqueIdentifier>{1bf45d08-ebab-427a-af60-9801066cff35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Piece">
+      <UniqueIdentifier>{1c854377-73a4-4404-84c5-d9b93ca2766c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OseroAI">
+      <UniqueIdentifier>{caa09d72-95c4-416d-a9e4-67bb31d21c7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -11,19 +23,55 @@
     <ClCompile Include="system\system.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Board.cpp" />
-    <ClCompile Include="Piece_White.cpp" />
-    <ClCompile Include="Piece_Black.cpp" />
+    <ClCompile Include="GameScene\Game.cpp">
+      <Filter>GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene\GameClear.cpp">
+      <Filter>GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene\GameOver.cpp">
+      <Filter>GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Piece\Piece_White.cpp">
+      <Filter>Piece</Filter>
+    </ClCompile>
+    <ClCompile Include="Piece\Piece_Black.cpp">
+      <Filter>Piece</Filter>
+    </ClCompile>
+    <ClCompile Include="Board\Board.cpp">
+      <Filter>Board</Filter>
+    </ClCompile>
+    <ClCompile Include="OseroAI\OseroAI.cpp">
+      <Filter>OseroAI</Filter>
+    </ClCompile>
+    <ClCompile Include="Title.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Board.h" />
-    <ClInclude Include="Piece_White.h" />
-    <ClInclude Include="Piece_Black.h" />
+    <ClInclude Include="GameScene\Game.h">
+      <Filter>GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene\GameClear.h">
+      <Filter>GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene\GameOver.h">
+      <Filter>GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Piece\Piece_White.h">
+      <Filter>Piece</Filter>
+    </ClInclude>
+    <ClInclude Include="Piece\Piece_Black.h">
+      <Filter>Piece</Filter>
+    </ClInclude>
+    <ClInclude Include="Board\Board.h">
+      <Filter>Board</Filter>
+    </ClInclude>
+    <ClInclude Include="OseroAI\OseroAI.h">
+      <Filter>OseroAI</Filter>
+    </ClInclude>
+    <ClInclude Include="Title.h" />
   </ItemGroup>
 </Project>
