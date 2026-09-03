@@ -227,10 +227,12 @@
     <ClCompile Include="GameScene\Game.cpp" />
     <ClCompile Include="GameScene\GameClear.cpp" />
     <ClCompile Include="GameScene\GameOver.cpp" />
+    <ClCompile Include="GameScene\Title.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OseroAI\OseroAI.cpp" />
     <ClCompile Include="Piece\Piece_Black.cpp" />
     <ClCompile Include="Piece\Piece_White.cpp" />
+    <ClCompile Include="ScalePopupAnimation\ScalePopupAnimation.cpp" />
     <ClCompile Include="SoundManager\SoundManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -238,20 +240,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Preview|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="system\system.cpp" />
-    <ClCompile Include="Title.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board\Board.h" />
     <ClInclude Include="GameScene\Game.h" />
     <ClInclude Include="GameScene\GameClear.h" />
     <ClInclude Include="GameScene\GameOver.h" />
+    <ClInclude Include="GameScene\Title.h" />
     <ClInclude Include="OseroAI\OseroAI.h" />
     <ClInclude Include="Piece\Piece_Black.h" />
     <ClInclude Include="Piece\Piece_White.h" />
+    <ClInclude Include="ScalePopupAnimation\ScalePopupAnimation.h" />
     <ClInclude Include="SoundManager\SoundManager.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
-    <ClInclude Include="Title.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

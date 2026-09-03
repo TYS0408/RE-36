@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include"Piece/Piece_White.h"
 #include"Piece/Piece_Black.h"
+#include"ScalePopupAnimation/ScalePopupAnimation.h"
 class GameOver;
 class GameClear;
 class OseroAI;
@@ -60,6 +61,15 @@ private:
 	SpriteRender m_blackTurnSprite;
 	/** 白*/
 	SpriteRender m_WhiteTurnSprite;
+
+	/** 「FINISH！」の画像スプライト*/
+	SpriteRender m_finishSprite;
+
+	/** スケールポップアップアニメーション*/
+	ScalePopupAnimation  m_scalePopupAnimation;
+
+	
+
 	/**ゲームクリア*/
 	GameOver* m_GameOver= nullptr;
 	/** ゲームオーバー*/
@@ -71,6 +81,7 @@ private:
 	enum class GameState
 	{
 		Playing,
+		Finishing,
 		GameOver,
 		GameClear,
 	};
@@ -109,6 +120,9 @@ private:
 	void UpdateAI();
 	/** スライドアニメーション開始処理*/
 	void StartTurnAnimation();
+
+	/** 演出後の勝敗判定*/
+	void FinalizeGameEnd();
 
 };
 

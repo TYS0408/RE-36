@@ -3,6 +3,7 @@
 #include"GameScene/GameClear.h"
 #include"GameScene/GameOver.h"
 #include"OseroAI/OseroAI.h"
+#include"ScalePopupAnimation/ScalePopupAnimation.h"
 namespace
 {
 	//オセロの盤面
@@ -20,6 +21,13 @@ namespace
 	/** 手番表示UIの幅と高さ*/
 	const float TURNUI_WIDTH = 800.0f;
 	const float TURNUI_HEIGHT = 200.0f;
+
+	/** 「FINISH！」の画像ファイルパス*/
+	const char* FILEPATH_FINISH = "Assets/Sprite/Finish/Finish.dds";
+
+	/** 「FINISH！」の画像の幅と高さ*/
+	const float FINISH_WIDTH = 1400.0f;
+	const float FINISH_HEIGHT = 800.0f;
 
 	/** 手番UIアニメーション用の座標 ・時間定数*/
 	/** 画面右外側の開始位置*/
@@ -47,7 +55,6 @@ Board::Board()
 {
 	m_ai = new OseroAI(); // ★コンストラクタで生成
 }
-
 Board::~Board()
 {
 	delete m_ai;
@@ -234,6 +241,9 @@ bool Board::Start()
 	m_spriteRender.Init(FILEPATHBOARD, WIDTHBOARD, HIGHTBOARD);
 	m_spriteRender.SetPosition({ 0.0f,0.0f,0.0f });
 
+	m_finishSprite.Init(FILEPATH_FINISH, FINISH_WIDTH, FINISH_HEIGHT);
+
+	m_scalePopupAnimation.Init(1.0f, 1.5f, 0.1f);
 	/** ヒント画像の初期化*/
 	const float cellSize = WIDTHBOARD / (float)SIZE;
 	const float hintSize = cellSize * 0.6f;
@@ -282,6 +292,16 @@ void Board::Update()
 {
 	/** 手番表示用アニメーションを更新*/
 	UpdateTurnUI();
+
+	/** Finish絵演出中なら更新して、終わったら勝敗を確定*/
+	if (m_scalePopupAnimation.IsPlaying())
+	{
+		bool finished = m_scalePopupAnimation.Update(g_gameTime->GetFrameDeltaTime());
+		if (finished)
+		{
+			FinalizeGameEnd();
+		}
+	}
 	
 	/** マウス操作をできるようにする*/
 	HandleMouseInput();
@@ -504,32 +524,36 @@ void Board::CheckGameEnd()
 {
 	if (!HasValidMove(BLACK) && !HasValidMove(WHITE))
 	{
-		int blackCount = 0;
-		int whiteCount = 0;
-		CountStone(blackCount, whiteCount);
-
-		/** 黒が白より多い場合はクリアにする*/
-		if (blackCount > whiteCount)
-		{
-			/** すでに生成していたら生成しない*/
-			if (m_GameClear == nullptr)
-			{
-				m_GameClear  = NewGO<GameClear>(0, "gameclear");
-			}
-			m_gameState = GameState::GameClear;
-		}
-		else
-		{
-			if (m_GameOver == nullptr)
-			{
-				m_GameOver = NewGO<GameOver>(0, "gameover");
-			}
-			m_gameState = GameState::GameOver;
-		}
+		/** ここでは勝敗を決めず、FINISH演出を開始するだけ*/
+		m_gameState = GameState::Finishing;
+		m_scalePopupAnimation.Start();
 	}
 }
 
-
+void Board::FinalizeGameEnd()
+{
+	int blackCount = 0;
+	int whiteCount = 0;
+	CountStone(blackCount, whiteCount);
+	/** 黒が白より多い場合はクリアにする*/
+	if (blackCount > whiteCount)
+	{
+		/** すでに生成していたら生成しない*/
+		if (m_GameClear == nullptr)
+		{
+			m_GameClear = NewGO<GameClear>(0, "gameclear");
+		}
+		m_gameState = GameState::GameClear;
+	}
+	else
+	{
+		if (m_GameOver == nullptr)
+		{
+			m_GameOver = NewGO<GameOver>(0, "gameover");
+		}
+		m_gameState = GameState::GameOver;
+	}
+}
 
 void Board::Render(RenderContext& rc)
 {
@@ -584,6 +608,18 @@ void Board::Render(RenderContext& rc)
 			}
 		}
 	}
+
+
+	/** FINISH演出中ならスケールを適用して描画*/
+	if (m_scalePopupAnimation.IsPlaying())
+	{
+		float s = m_scalePopupAnimation.GetScale();
+		m_finishSprite.SetPosition({ 0.0f, 0.0f, 0.0f });
+		m_finishSprite.SetScale(Vector3(s, s, 1.0f)); 
+		m_finishSprite.Update();
+		m_finishSprite.Draw(rc);
+	}
+
 
 	/** 現在の手番に応じて手番表示UIを切り替えて描画させる*/
 	if (m_turn == BLACK)

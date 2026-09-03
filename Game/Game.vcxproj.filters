@@ -16,8 +16,12 @@
     <Filter Include="OseroAI">
       <UniqueIdentifier>{caa09d72-95c4-416d-a9e4-67bb31d21c7e}</UniqueIdentifier>
     </Filter>
+
+    <Filter Include="ScalePopupAnimation">
+      <UniqueIdentifier>{7d667d04-a26a-40e5-8ec3-55740db6293f}</UniqueIdentifier>
     <Filter Include="SoundManager">
       <UniqueIdentifier>{20248577-56a9-4dac-9eb8-85cfac23bb35}</UniqueIdentifier>
+
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +51,13 @@
     <ClCompile Include="OseroAI\OseroAI.cpp">
       <Filter>OseroAI</Filter>
     </ClCompile>
+
+    <ClCompile Include="ScalePopupAnimation\ScalePopupAnimation.cpp">
+      <Filter>ScalePopupAnimation</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene\Title.cpp">
+      <Filter>GameScene</Filter>
+
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="SoundManager\SoundManager.cpp">
       <Filter>SoundManager</Filter>
@@ -78,6 +89,13 @@
     <ClInclude Include="OseroAI\OseroAI.h">
       <Filter>OseroAI</Filter>
     </ClInclude>
+
+    <ClInclude Include="ScalePopupAnimation\ScalePopupAnimation.h">
+      <Filter>ScalePopupAnimation</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene\Title.h">
+      <Filter>GameScene</Filter>
+
     <ClInclude Include="Title.h" />
     <ClInclude Include="SoundManager\SoundManager.h">
       <Filter>SoundManager</Filter>
