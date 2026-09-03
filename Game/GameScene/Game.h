@@ -14,5 +14,8 @@ private:
 	Board* m_board = nullptr;
 	Piece_White* m_piece_White = nullptr;
 	Piece_Black* m_piece_Black = nullptr;
+
+	/** ゲームBGMのサウンドソース*/
+	SoundSource* m_bgm = nullptr;
 };
 

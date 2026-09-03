@@ -16,6 +16,9 @@
     <Filter Include="OseroAI">
       <UniqueIdentifier>{caa09d72-95c4-416d-a9e4-67bb31d21c7e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SoundManager">
+      <UniqueIdentifier>{20248577-56a9-4dac-9eb8-85cfac23bb35}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -45,6 +48,9 @@
       <Filter>OseroAI</Filter>
     </ClCompile>
     <ClCompile Include="Title.cpp" />
+    <ClCompile Include="SoundManager\SoundManager.cpp">
+      <Filter>SoundManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -73,5 +79,8 @@
       <Filter>OseroAI</Filter>
     </ClInclude>
     <ClInclude Include="Title.h" />
+    <ClInclude Include="SoundManager\SoundManager.h">
+      <Filter>SoundManager</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

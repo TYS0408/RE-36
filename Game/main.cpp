@@ -5,7 +5,7 @@
 #include<dxgidebug.h>
 
 #include"Title.h"
-
+#include"SoundManager/SoundManager.h"
 
 
 void ReportLiveObjects()
@@ -35,6 +35,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	//Gameクラスのオブジェクトを作成。
 	NewGO<Title>(0, "title");
+
+	NewGO<SoundManager>(0, "soundmanager");
 
 	//////////////////////////////////////
 	// 初期化を行うコードを書くのはここまで！！！
