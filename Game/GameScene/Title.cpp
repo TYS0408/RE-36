@@ -14,11 +14,11 @@ namespace
 	const char* FILEPATH_PRESSSTART = "Assets/Sprite/Title/PressAnyButton.dds";
 
 	/** タイトルを促す画像の座標*/
-	const Vector3 TITLE_PRESSSTART_POS = { 0.0f,-350.0f,0.0f, };
+	const Vector3 TITLE_PRESSSTART_POS = { 0.0f,-400.0f,0.0f, };
 
 	/** タイトルを促す画像の大きさ*/
-	constexpr int TITLE_PRESSSTART_WIDTH = 1400.0f;
-	constexpr int TITLE_PRESSSTART_HIGHT = 1700.0f;
+	constexpr int TITLE_PRESSSTART_WIDTH = 1200.0f;
+	constexpr int TITLE_PRESSSTART_HIGHT = 1500.0f;
 
 	/** タイトル画面での点滅の最後の間隔*/
 	constexpr float TITLE_FINAL_BLINK_INTERVAL = 1.0f;
