@@ -229,6 +229,7 @@
     <ClCompile Include="GameScene\GameOver.cpp" />
     <ClCompile Include="GameScene\Title.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NumberRender\NumberRender.cpp" />
     <ClCompile Include="OseroAI\OseroAI.cpp" />
     <ClCompile Include="Piece\Piece_Black.cpp" />
     <ClCompile Include="Piece\Piece_White.cpp" />
@@ -247,6 +248,7 @@
     <ClInclude Include="GameScene\GameClear.h" />
     <ClInclude Include="GameScene\GameOver.h" />
     <ClInclude Include="GameScene\Title.h" />
+    <ClInclude Include="NumberRender\NumberRender.h" />
     <ClInclude Include="OseroAI\OseroAI.h" />
     <ClInclude Include="Piece\Piece_Black.h" />
     <ClInclude Include="Piece\Piece_White.h" />
