@@ -543,6 +543,8 @@ void Board::FinalizeGameEnd()
 		{
 			m_GameClear = NewGO<GameClear>(0, "gameclear");
 		}
+		/** ピースカウントを設定 */
+		m_GameClear->SetPieceCount(blackCount, whiteCount);
 		m_gameState = GameState::GameClear;
 	}
 	else
@@ -551,6 +553,8 @@ void Board::FinalizeGameEnd()
 		{
 			m_GameOver = NewGO<GameOver>(0, "gameover");
 		}
+		/** ここで駒数を渡す*/
+		m_GameOver->SetPieceCount(blackCount, whiteCount);
 		m_gameState = GameState::GameOver;
 	}
 }

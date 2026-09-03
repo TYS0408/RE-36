@@ -1,4 +1,5 @@
-#pragma once
+﻿#pragma once
+#include"NumberRender/NumberRender.h"
 class GameOver : public IGameObject
 {
 public:
@@ -10,8 +11,24 @@ public:
 	void Update();
 	void Render(RenderContext& rc);
 
+	/** 黒駒と白駒の数を設定する*/
+	void SetPieceCount(int blackCount, int whiteCount);	
 private:
 	SpriteRender m_gameOverSpriteRender;
 
+	/** 黒い駒の数の数字*/
+	NumberRender m_blackPieceCountRender;
+	/** 白い駒の数の数字*/
+	NumberRender m_whitePieceCountRender;
+
+	/**黒駒アイコン */
+	SpriteRender m_blackPieceIcon;
+	/**白駒アイコン */
+	SpriteRender m_whitePieceIcon;
+
+	/** 黒い駒の数*/
+	uint8_t m_blackCount = 0;
+	/** 白い駒の数*/
+	uint8_t m_whiteCount = 0;
 };
 

@@ -34,6 +34,9 @@
     <ClCompile Include="SoundManager\SoundManager.cpp">
       <Filter>SoundManager</Filter>
     </ClCompile>
+    <ClCompile Include="NumberRender\NumberRender.cpp">
+      <Filter>NumberRender</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -68,6 +71,9 @@
     <ClInclude Include="SoundManager\SoundManager.h">
       <Filter>SoundManager</Filter>
     </ClInclude>
+    <ClInclude Include="NumberRender\NumberRender.h">
+      <Filter>NumberRender</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="GameScene">
@@ -87,6 +93,9 @@
     </Filter>
     <Filter Include="SoundManager">
       <UniqueIdentifier>{6a034ec0-f95f-4c15-914e-1fbb531b5d66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NumberRender">
+      <UniqueIdentifier>{3a798389-2a57-4488-8bb8-6c35b48ae53b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
