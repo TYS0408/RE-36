@@ -12,7 +12,8 @@ namespace {
 	const char* soundFileNameList[enSound_Num] = {
 		"GameBGM_1",
 		"GameBGM_2",
-		"GameBGM_3"
+		"GameBGM_3",
+		"PutStone"
 	};
 }
 

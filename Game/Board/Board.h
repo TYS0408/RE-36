@@ -5,6 +5,7 @@
 class GameOver;
 class GameClear;
 class OseroAI;
+class SoundManager;
 class Board :public IGameObject
 {
 public:
@@ -103,6 +104,13 @@ private:
 	float m_turnUIPosX = 0.0f;
 	/** 前フレームの手番*/
 	Stone m_lastTurn = EMPTY;
+
+	/** 石を置く音*/
+	SoundSource* m_putStoneSound;
+
+	/** サウンドマネージャー */
+	SoundManager* m_soundManager = nullptr;
+
 private:
 	//挟んだ駒をひっくり返す
 	void Reverse(int x, int y, Stone turn);
