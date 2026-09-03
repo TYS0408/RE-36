@@ -4,6 +4,7 @@
 #include"GameScene/GameOver.h"
 #include"OseroAI/OseroAI.h"
 #include"ScalePopupAnimation/ScalePopupAnimation.h"
+#include "SoundManager/SoundManager.h"
 namespace
 {
 	//オセロの盤面
@@ -53,6 +54,8 @@ namespace
 }
 Board::Board()
 {
+	m_soundManager = FindGO<SoundManager>("soundmanager");
+
 	m_ai = new OseroAI(); // ★コンストラクタで生成
 }
 Board::~Board()
@@ -181,6 +184,9 @@ void Board::PutStone(int x, int y, Stone turn)
 	{
 		return;
 	}
+
+	/** 駒を置く音を再生*/
+	m_putStoneSound = m_soundManager->PlayingSound(enSound_PutStone, false, 1.0f);
 
 	/** まず石を置く*/
 	m_board[y][x] = turn;
