@@ -1,49 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="system">
-      <UniqueIdentifier>{22dd8095-74f9-46df-81a1-36675a040b1f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameScene">
-      <UniqueIdentifier>{057152cc-52c1-4bcc-be6b-d1a4710192f6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Board">
-      <UniqueIdentifier>{1bf45d08-ebab-427a-af60-9801066cff35}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Piece">
-      <UniqueIdentifier>{1c854377-73a4-4404-84c5-d9b93ca2766c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="OseroAI">
-      <UniqueIdentifier>{caa09d72-95c4-416d-a9e4-67bb31d21c7e}</UniqueIdentifier>
-    </Filter>
-
-    <Filter Include="ScalePopupAnimation">
-      <UniqueIdentifier>{7d667d04-a26a-40e5-8ec3-55740db6293f}</UniqueIdentifier>
-    <Filter Include="SoundManager">
-      <UniqueIdentifier>{20248577-56a9-4dac-9eb8-85cfac23bb35}</UniqueIdentifier>
-
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="system\system.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="system\system.cpp" />
     <ClCompile Include="GameScene\Game.cpp">
       <Filter>GameScene</Filter>
     </ClCompile>
     <ClCompile Include="GameScene\GameClear.cpp">
       <Filter>GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="GameScene\GameOver.cpp">
+    <ClCompile Include="GameScene\Title.cpp">
       <Filter>GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="Piece\Piece_White.cpp">
-      <Filter>Piece</Filter>
-    </ClCompile>
-    <ClCompile Include="Piece\Piece_Black.cpp">
-      <Filter>Piece</Filter>
+    <ClCompile Include="GameScene\GameOver.cpp">
+      <Filter>GameScene</Filter>
     </ClCompile>
     <ClCompile Include="Board\Board.cpp">
       <Filter>Board</Filter>
@@ -51,23 +22,22 @@
     <ClCompile Include="OseroAI\OseroAI.cpp">
       <Filter>OseroAI</Filter>
     </ClCompile>
-
+    <ClCompile Include="Piece\Piece_White.cpp">
+      <Filter>Piece</Filter>
+    </ClCompile>
+    <ClCompile Include="Piece\Piece_Black.cpp">
+      <Filter>Piece</Filter>
+    </ClCompile>
     <ClCompile Include="ScalePopupAnimation\ScalePopupAnimation.cpp">
       <Filter>ScalePopupAnimation</Filter>
     </ClCompile>
-    <ClCompile Include="GameScene\Title.cpp">
-      <Filter>GameScene</Filter>
-
-    <ClCompile Include="Title.cpp" />
     <ClCompile Include="SoundManager\SoundManager.cpp">
       <Filter>SoundManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="system\system.h">
-      <Filter>system</Filter>
-    </ClInclude>
+    <ClInclude Include="system\system.h" />
     <ClInclude Include="GameScene\Game.h">
       <Filter>GameScene</Filter>
     </ClInclude>
@@ -77,11 +47,8 @@
     <ClInclude Include="GameScene\GameOver.h">
       <Filter>GameScene</Filter>
     </ClInclude>
-    <ClInclude Include="Piece\Piece_White.h">
-      <Filter>Piece</Filter>
-    </ClInclude>
-    <ClInclude Include="Piece\Piece_Black.h">
-      <Filter>Piece</Filter>
+    <ClInclude Include="GameScene\Title.h">
+      <Filter>GameScene</Filter>
     </ClInclude>
     <ClInclude Include="Board\Board.h">
       <Filter>Board</Filter>
@@ -89,16 +56,37 @@
     <ClInclude Include="OseroAI\OseroAI.h">
       <Filter>OseroAI</Filter>
     </ClInclude>
-
+    <ClInclude Include="Piece\Piece_Black.h">
+      <Filter>Piece</Filter>
+    </ClInclude>
+    <ClInclude Include="Piece\Piece_White.h">
+      <Filter>Piece</Filter>
+    </ClInclude>
     <ClInclude Include="ScalePopupAnimation\ScalePopupAnimation.h">
       <Filter>ScalePopupAnimation</Filter>
     </ClInclude>
-    <ClInclude Include="GameScene\Title.h">
-      <Filter>GameScene</Filter>
-
-    <ClInclude Include="Title.h" />
     <ClInclude Include="SoundManager\SoundManager.h">
       <Filter>SoundManager</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="GameScene">
+      <UniqueIdentifier>{9e180d0e-16ba-4242-b06a-a28080af9047}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Board">
+      <UniqueIdentifier>{83c7ca6e-24d4-4081-8081-a7545776682d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OseroAI">
+      <UniqueIdentifier>{cc3c361f-ec76-4270-b788-cfe03f823f8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Piece">
+      <UniqueIdentifier>{af2175c1-059e-48ea-8bd0-b9d696a079e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScalePopupAnimation">
+      <UniqueIdentifier>{eff8e5d3-af4a-4f77-b718-f928c0763a5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SoundManager">
+      <UniqueIdentifier>{6a034ec0-f95f-4c15-914e-1fbb531b5d66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
