@@ -4,7 +4,7 @@
 #include<InitGUID.h>
 #include<dxgidebug.h>
 
-#include"Title.h"
+#include"GameScene/Title.h"
 #include"SoundManager/SoundManager.h"
 
 
