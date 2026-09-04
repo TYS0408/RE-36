@@ -7,6 +7,7 @@ enum enSound
 	enSound_GameBGM_2,
 	enSound_GameBGM_3,
 	enSound_PutStone,
+	enSound_Pass,
 	enSound_Num
 };
 

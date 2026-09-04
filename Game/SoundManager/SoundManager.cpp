@@ -13,7 +13,8 @@ namespace {
 		"GameBGM_1",
 		"GameBGM_2",
 		"GameBGM_3",
-		"PutStone"
+		"PutStone",
+		"Pass"
 	};
 }
 
